@@ -5,11 +5,12 @@
 export const TheWorldShader = async () => ({
 
 	uniforms: {
-
+        
+        u_Time: {value: 0},
 		'tDiffuse': { value: null },
 		'resolution': { value: null },
 		'pixelSize': { value: 1 },
-
+        u_Trigger: { value: 0 },
 	},
 
 	vertexShader: await getShader(window.location.origin + "/examples/jsm/shaders/projects/the_world_shader/vs.glsl"),

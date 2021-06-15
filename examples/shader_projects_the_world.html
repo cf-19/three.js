@@ -10,10 +10,6 @@
 
 		<div id="container"></div>
 
-		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - pixel shader by <a href="http://wongbryan.github.io">wongbryan</a>
-		</div>
-
 		<script type="module">
 
 			import * as THREE from '../build/three.module.js';
@@ -27,7 +23,7 @@
 			import { TheWorldShader } from './jsm/shaders/projects/the_world_shader/TheWorldShader.js';
 
 			let camera, scene, renderer, gui, composer, controls;
-			let pixelPass, params;
+			let pixelPass, params, isStop = false;
 
 			let group;
 
@@ -49,13 +45,28 @@
 				container.appendChild( renderer.domElement );
 
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-				camera.position.set( 0, 0, 30 );
+				camera.position.set( 0, 400, 500 );
+				camera.lookAt(0, 200, 0);
 				controls = new TrackballControls( camera, renderer.domElement );
 				controls.rotateSpeed = 2.0;
 				controls.panSpeed = 0.8;
 				controls.zoomSpeed = 1.5;
 
 				scene = new THREE.Scene();
+
+				// ground
+				const gt = new THREE.TextureLoader().load( "textures/terrain/grasslight-big.jpg" );
+				const gg = new THREE.PlaneGeometry( 2000, 2000 );
+				const gm = new THREE.MeshPhongMaterial( { color: 0xffffff, map: gt, shininess: 200 } );
+
+				const ground = new THREE.Mesh( gg, gm );
+				ground.rotation.x = - Math.PI / 2;
+				ground.material.map.repeat.set( 8, 8 );
+				ground.material.map.wrapS = ground.material.map.wrapT = THREE.RepeatWrapping;
+				ground.material.map.encoding = THREE.sRGBEncoding;
+				ground.receiveShadow = true;
+
+				scene.add( ground );
 
 				const hemisphereLight = new THREE.HemisphereLight( 0xfceafc, 0x000000, .8 );
 				scene.add( hemisphereLight );
@@ -77,7 +88,6 @@
 					new THREE.BoxGeometry( 1, 1, 1 ),
 					new THREE.ConeGeometry( 1, 1, 32 ),
 					new THREE.TetrahedronGeometry( 1 ),
-					new THREE.TorusKnotGeometry( 1, .4 )
 				];
 
 				group = new THREE.Group();
@@ -93,7 +103,7 @@
 
 					const mesh = new THREE.Mesh( geom, mat );
 
-					const s = 4 + Math.random() * 10;
+					const s = 4 + Math.random() * 30;
 					mesh.scale.set( s, s, s );
 					mesh.position.set( Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5 ).normalize();
 					mesh.position.multiplyScalar( Math.random() * 200 );
@@ -102,6 +112,7 @@
 
 				}
 
+				group.position.set(0, 200, 0);
 				scene.add( group );
 
 				composer = new EffectComposer( renderer );
@@ -119,8 +130,16 @@
 					postprocessing: true
 				};
 				gui = new GUI();
-				gui.add( params, 'pixelSize' ).min( 2 ).max( 32 ).step( 2 );
-				gui.add( params, 'postprocessing' );
+
+				gui.add({ 
+					onClick() {
+						pixelPass.uniforms[ "u_Trigger" ].value = 1.0;
+						setTimeout(() => {
+							pixelPass.uniforms[ "u_Trigger" ].value = 0;
+							isStop = true;
+						}, 2000)
+					} 
+				}, 'onClick').name('砸哇多')
 
 			}
 
@@ -139,12 +158,17 @@
 				controls.update();
 				updateGUI();
 
-				group.rotation.y += .0015;
-				group.rotation.z += .001;
+				if(!isStop) {
+					group.rotation.y += .0015;
+					group.rotation.z += .001;
+				}
 
 			}
 
-			function animate() {
+			function animate(time) {
+				// convert to seconds
+				time *= 0.001;
+				pixelPass.uniforms[ "u_Time" ].value = time;
 
 				update();
 
