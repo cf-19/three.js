@@ -13,9 +13,9 @@ export const TheWorldShader = async () => ({
         u_Trigger: { value: 0 },
 	},
 
-	vertexShader: await getShader(window.location.origin + "/examples/jsm/shaders/projects/the_world_shader/vs.glsl"),
+	vertexShader: await getShader(window.origin + "/examples/jsm/shaders/projects/the_world_shader/vs.glsl"),
 
-	fragmentShader: await getShader(window.location.origin + "/examples/jsm/shaders/projects/the_world_shader/fs.glsl"),
+	fragmentShader: await getShader(window.origin + "/examples/jsm/shaders/projects/the_world_shader/fs.glsl"),
 
 });
 

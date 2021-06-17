@@ -25,7 +25,7 @@
 			let camera, scene, renderer, gui, composer, controls;
 			let pixelPass, params, isStop = false;
 
-			let group;
+			let group, effect = 0.01;
 
 			await init();
 			animate();
@@ -45,14 +45,25 @@
 				container.appendChild( renderer.domElement );
 
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-				camera.position.set( 0, 400, 500 );
-				camera.lookAt(0, 200, 0);
+				camera.position.set( 0, 350, 500 );
+				camera.lookAt(0, 300, 0);
 				controls = new TrackballControls( camera, renderer.domElement );
 				controls.rotateSpeed = 2.0;
 				controls.panSpeed = 0.8;
 				controls.zoomSpeed = 1.5;
 
 				scene = new THREE.Scene();
+
+				// audio
+				const listener = new THREE.AudioListener();
+				camera.add( listener );
+
+				// create a global audio source
+				const sound = new THREE.Audio( listener );
+
+				// load a sound and set it as the Audio object's buffer
+				const audioLoader = new THREE.AudioLoader();
+				
 
 				// ground
 				const gt = new THREE.TextureLoader().load( "textures/terrain/grasslight-big.jpg" );
@@ -133,11 +144,38 @@
 
 				gui.add({ 
 					onClick() {
-						pixelPass.uniforms[ "u_Trigger" ].value = 1.0;
-						setTimeout(() => {
-							pixelPass.uniforms[ "u_Trigger" ].value = 0;
-							isStop = true;
-						}, 2000)
+						if(isStop) return;
+
+						audioLoader.load(window.location.origin+'/examples/jsm/shaders/projects/the_world_shader/dio_the_world.mp3', function( buffer ) {
+							sound.setBuffer( buffer );
+							sound.setLoop( false );
+							sound.setVolume( 0.5 );
+							sound.play();
+
+							sound.source.onended = () => {
+								pixelPass.uniforms[ "u_Trigger" ].value = 0;
+								isStop = true;
+								sound.isPlaying = false;
+
+								audioLoader.load(window.origin+"/examples/jsm/shaders/projects/the_world_shader/tick.mp3", ( buffer ) => {
+									sound.setBuffer( buffer );
+									sound.setLoop( true );
+									sound.setVolume( 0.5 );
+									sound.play();
+								})
+
+								setTimeout(() => {
+									isStop = false;
+									sound.isPlaying = false;
+									sound.stop();
+								}, 5000)
+							};
+
+							setTimeout(() => {
+								pixelPass.uniforms[ "u_Trigger" ].value = 1.0;
+							}, 2000)
+							
+						});
 					} 
 				}, 'onClick').name('砸哇多')
 

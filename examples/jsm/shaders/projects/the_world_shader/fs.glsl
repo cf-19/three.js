@@ -2,6 +2,7 @@ uniform sampler2D tDiffuse;
 uniform float u_Time;
 uniform vec2 resolution;
 uniform float u_Trigger;
+uniform float u_EffectFactor;
 
 varying highp vec2 vUv;
 
@@ -32,7 +33,7 @@ void main(){
         
         float sinArg = distanceFromCenter * 10.0 - u_Time * 10.0;
         float slope = cos(sinArg) ;
-        float effectFactor = 0.012; // 0.05
+        float effectFactor = 0.01; // 0.05
         vec4 color = texture(tDiffuse, vUv + normalize(vec2(w, h)) * slope * effectFactor);
 
         vec3 hsvColor = rgb2hsv(color.rgb);
