@@ -1,4 +1,5 @@
 import * as THREE from '../src/Three.js';
+import { OrbitControls } from '../examples/jsm/controls/OrbitControls.js'
 
 class App {
 
@@ -19,13 +20,15 @@ class App {
         this.scene = new THREE.Scene();
     
         /** custom start */
-        this.testShapeGeometry()
+        this.testLOD()
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
         this.renderer.setSize( App.VIEWPORT_WIDTH, App.VIEWPORT_HEIGHT );
         this.renderer.setAnimationLoop( this.animation.bind(this) );
         document.body.appendChild( this.renderer.domElement );
+
+        const controls = new OrbitControls( this.camera, this.renderer.domElement );
 
     }
 
@@ -60,6 +63,23 @@ class App {
         const mesh = new THREE.Mesh( geometry, material ) ;
         this.scene.add( mesh );
 
+    }
+
+    testLOD() {
+        const lod = new THREE.LOD();
+
+        //Create spheres with 3 levels of detail and create new LOD levels for them
+        for( let i = 0; i < 3; i++ ) {
+
+            const geometry = new THREE.IcosahedronGeometry( 10, 3 - i )
+            const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+            const mesh = new THREE.Mesh( geometry, material );
+
+            lod.addLevel( mesh, i * 75 );
+
+        }
+
+        this.scene.add( lod );
     }
 
 }
