@@ -3,8 +3,8 @@ import { OrbitControls } from '../examples/jsm/controls/OrbitControls.js'
 
 class App {
 
-    camera; 
-    scene; 
+    camera = new THREE.PerspectiveCamera( 70, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000 ); 
+    scene = new THREE.Scene(); 
     renderer;
     geometry; 
     material; 
@@ -15,19 +15,16 @@ class App {
 
     init() {
 
-        this.camera = new THREE.PerspectiveCamera( 70, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000 );
         this.camera.position.z = 100;
-        this.scene = new THREE.Scene();
     
         /** custom start */
-        this.testLOD()
+        this.testMeshUserData()
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
         this.renderer.setSize( App.VIEWPORT_WIDTH, App.VIEWPORT_HEIGHT );
         this.renderer.setAnimationLoop( this.animation.bind(this) );
         document.body.appendChild( this.renderer.domElement );
-
         const controls = new OrbitControls( this.camera, this.renderer.domElement );
 
     }
@@ -80,6 +77,13 @@ class App {
         }
 
         this.scene.add( lod );
+    }
+
+    testMeshUserData() {
+        this.scene.userData = {
+            test: "I'm data"
+        }
+        console.log(this.scene.toJSON());
     }
 
 }
