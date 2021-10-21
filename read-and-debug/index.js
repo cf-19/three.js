@@ -7,7 +7,7 @@ class App {
     scene = new THREE.Scene(); 
     renderer;
     geometry; 
-    material; 
+    material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } ); 
     mesh;
 
     static VIEWPORT_WIDTH = 600;
@@ -15,10 +15,10 @@ class App {
 
     init() {
 
-        this.camera.position.z = 100;
+        this.camera.position.z = 50;
     
         /** custom start */
-        this.testMeshUserData()
+        this.testLineSegment()
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -84,6 +84,22 @@ class App {
             test: "I'm data"
         }
         console.log(this.scene.toJSON());
+    }
+
+    testLineSegment() {
+
+        // 奇数的情况 最后一点顶点无效
+        const points = [];
+        points.push( new THREE.Vector3( 10, 0, 0 ) );
+        points.push( new THREE.Vector3( 10, 10, 0 ) );
+        points.push( new THREE.Vector3( 0, 0, 0 ) );
+        points.push( new THREE.Vector3( 0, 10, 0 ) );
+
+        const geometry = new THREE.BufferGeometry().setFromPoints( points );
+        const LineSegments = new THREE.LineSegments( geometry, this.material );
+
+        this.scene.add(LineSegments);
+
     }
 
 }
