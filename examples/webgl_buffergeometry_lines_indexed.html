@@ -130,45 +130,46 @@
 					false, 600
 				);
 
-				y += 600;
-				snowflake(
-					[
-						new THREE.Vector3( 0, y, 0 ),
-						new THREE.Vector3( 250, y + 400, 0 ),
-						new THREE.Vector3( 500, y, 0 )
-					],
-					true, 600
-				);
+				// y += 600;
+				// snowflake(
+				// 	[
+				// 		new THREE.Vector3( 0, y, 0 ),
+				// 		new THREE.Vector3( 250, y + 400, 0 ),
+				// 		new THREE.Vector3( 500, y, 0 )
+				// 	],
+				// 	true, 600
+				// );
 
-				y += 600;
-				snowflake(
-					[
-						new THREE.Vector3( 0, y, 0 ),
-						new THREE.Vector3( 500, y, 0 ),
-						new THREE.Vector3( 500, y + 500, 0 ),
-						new THREE.Vector3( 0, y + 500, 0 )
-					],
-					true, 600
-				);
+				// y += 600;
+				// snowflake(
+				// 	[
+				// 		new THREE.Vector3( 0, y, 0 ),
+				// 		new THREE.Vector3( 500, y, 0 ),
+				// 		new THREE.Vector3( 500, y + 500, 0 ),
+				// 		new THREE.Vector3( 0, y + 500, 0 )
+				// 	],
+				// 	true, 600
+				// );
 
-				y += 1000;
-				snowflake(
-					[
-						new THREE.Vector3( 250, y, 0 ),
-						new THREE.Vector3( 500, y, 0 ),
-						new THREE.Vector3( 250, y, 0 ),
-						new THREE.Vector3( 250, y + 250, 0 ),
-						new THREE.Vector3( 250, y, 0 ),
-						new THREE.Vector3( 0, y, 0 ),
-						new THREE.Vector3( 250, y, 0 ),
-						new THREE.Vector3( 250, y - 250, 0 ),
-						new THREE.Vector3( 250, y, 0 )
-					],
-					false, 600
-				);
+				// y += 1000;
+				// snowflake(
+				// 	[
+				// 		new THREE.Vector3( 250, y, 0 ),
+				// 		new THREE.Vector3( 500, y, 0 ),
+				// 		new THREE.Vector3( 250, y, 0 ),
+				// 		new THREE.Vector3( 250, y + 250, 0 ),
+				// 		new THREE.Vector3( 250, y, 0 ),
+				// 		new THREE.Vector3( 0, y, 0 ),
+				// 		new THREE.Vector3( 250, y, 0 ),
+				// 		new THREE.Vector3( 250, y - 250, 0 ),
+				// 		new THREE.Vector3( 250, y, 0 )
+				// 	],
+				// 	false, 600
+				// );
 
 				//
-
+                debugger
+                console.log(indices);
 				geometry.setIndex( indices );
 				geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
 				geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );

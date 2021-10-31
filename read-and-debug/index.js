@@ -16,9 +16,18 @@ class App {
     init() {
 
         this.camera.position.z = 50;
+        this.camera = new THREE.PerspectiveCamera( 60, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000 );
+        this.camera.position.z = 0;
+        this.scene = new THREE.Scene();
+
+        const size = 10;
+        const divisions = 10;
+
+        const gridHelper = new THREE.GridHelper( size, divisions );
+        this.scene.add( gridHelper );
     
         /** custom start */
-        this.testLineSegment()
+        this.testMirrorMatrix()
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -60,6 +69,64 @@ class App {
         const mesh = new THREE.Mesh( geometry, material ) ;
         this.scene.add( mesh );
 
+        return mesh;
+
+    }
+
+    testMirrorMatrix() {
+
+        const x = 0, y = 0;
+
+        const heartShape = new THREE.Shape();
+
+        heartShape.moveTo( x + 5, y + 5 );
+        heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y, x, y );
+        heartShape.bezierCurveTo( x - 6, y, x - 6, y + 7,x - 6, y + 7 );
+        heartShape.bezierCurveTo( x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19 );
+        heartShape.bezierCurveTo( x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7 );
+        heartShape.bezierCurveTo( x + 16, y + 7, x + 16, y, x + 10, y );
+        heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
+
+        const geometry = new THREE.ShapeGeometry( heartShape );
+        const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+        const mesh = new THREE.Mesh( geometry, material ) ;
+        mesh.position.set(75, 0, -300);
+
+        // rotate
+        mesh.rotation.z = 3.14 / 2
+
+        let meshs = [mesh]
+
+        let zNormal = new THREE.Vector3(0, 0, 1);
+
+        // rotate along with y plane
+        {
+            let meshClone = mesh.clone();
+            let plane = new Plane()
+            plane.fromTriangle(
+                new THREE.Vector3(0, 0, 0),
+                zNormal,
+                new THREE.Vector3(0, 1, 0),
+            );
+            meshClone.applyMatrix4(plane.getReflection())
+            meshs.push(meshClone)
+        }
+
+        {
+            let meshClone = mesh.clone();
+            let plane = new Plane()
+            plane.fromTriangle(
+                new THREE.Vector3(0, 0, 0),
+                zNormal,
+                new THREE.Vector3(1, 1, 0).normalize(),
+            );
+            meshClone.applyMatrix4(plane.getReflection())
+            meshs.push(meshClone)
+        }
+        
+
+        this.scene.add( ...meshs );
+
     }
 
     testLOD() {
@@ -99,6 +166,55 @@ class App {
         const LineSegments = new THREE.LineSegments( geometry, this.material );
 
         this.scene.add(LineSegments);
+
+    }
+
+}
+
+class M_Matrix {
+
+    static getReflection({a,b,c,d}) {
+
+        let mirrorMatrix = new THREE.Matrix4();
+        mirrorMatrix.set(
+            1-2*a*a, -2*a*b, -2*a*c, -2*a*d,
+            -2*a*b, 1-2*b*b, -2*b*c, -2*b*d,
+            -2*a*c, -2*b*c, 1-2*c*c, -2*c*d,
+            0, 0, 0, 1,
+        );
+
+        return mat;
+
+    }
+
+}
+
+class Plane {
+
+    norm;
+    d;
+
+    fromTriangle(v0, v1, v2) {
+
+        this.norm = new THREE.Vector3().crossVectors( v1.sub(v0), v2.sub(v0) );
+        this.d = -this.norm.dot(v0);
+
+    }
+
+    getReflection() {
+
+        let norm = this.norm
+        let d = this.d
+
+        let mirrorMatrix = new THREE.Matrix4();
+        mirrorMatrix.set(
+            -2 * norm.x * norm.x + 1,  -2 * norm.y * norm.x,     -2 * norm.z * norm.x, 0,
+            -2 * norm.x * norm.y,      -2 * norm.y * norm.y + 1, -2 * norm.z * norm.y, 0,
+            -2 * norm.x * norm.z,      -2 * norm.y * norm.z,     -2 * norm.z * norm.z + 1, 0,
+            -2 * norm.x * d, -2 * norm.y * d, -2 * norm.z * d, 1,
+        );
+
+        return mirrorMatrix;
 
     }
 
