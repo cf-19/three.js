@@ -93,9 +93,10 @@ class App {
         mesh.position.set(75, 0, -300);
 
         // rotate
-        mesh.rotation.z = 3.14 / 2
+        mesh.rotation.z = 3.14 / 4
 
         let meshs = [mesh]
+        console.log("origin mesh", mesh);
 
         let zNormal = new THREE.Vector3(0, 0, 1);
 
@@ -110,6 +111,7 @@ class App {
             );
             meshClone.applyMatrix4(plane.getReflection())
             meshs.push(meshClone)
+            console.log("Y plane", meshClone);
         }
 
         {
@@ -122,6 +124,7 @@ class App {
             );
             meshClone.applyMatrix4(plane.getReflection())
             meshs.push(meshClone)
+            console.log("custom", meshClone);
         }
         
 
