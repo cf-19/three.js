@@ -11,6 +11,9 @@ class App {
     material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } ); 
     mesh;
 
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
+
     static VIEWPORT_WIDTH = 600;
     static VIEWPORT_HEIGHT = 400;
 
@@ -24,11 +27,11 @@ class App {
         const size = 10;
         const divisions = 10;
 
-        const gridHelper = new THREE.GridHelper( size, divisions );
-        this.scene.add( gridHelper );
+        // const gridHelper = new THREE.GridHelper( size, divisions );
+        // this.scene.add( gridHelper );
     
         /** custom start */
-        this.testMirrorMatrix()
+        this.testBox2()
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -41,16 +44,33 @@ class App {
 
     }
 
+    testBox2() {
+
+        const box = new THREE.Box2().setFromPoints([
+            new THREE.Vector2(100, 100),
+            new THREE.Vector2(0, 0),
+        ])
+
+        
+    }
+
     onMouseDown(event) {
 
-        let mouse = new THREE.Vector2();
+        this.mouse.x =  ( event.clientX / window.innerWidth ) * 2 - 1;
+        this.mouse.y =  -( event.clientY / window.innerHeight ) * 2 + 1;
 
-        mouse.x =  ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse.y =  ( event.clientY / window.innerHeight ) * 2 + 1;
+        console.log(this.mouse);
 
-        const m = this.get3dPointZAxis(event)
+        this.raycaster.setFromCamera( this.mouse, this.camera );
+        const intersects = this.raycaster.intersectObjects( this.scene.children );
 
-        console.log(m);
+        console.log(intersects);
+
+        for ( let i = 0; i < intersects.length; i ++ ) {
+
+            console.log(intersects[i]);
+    
+        }
 
     }
 
