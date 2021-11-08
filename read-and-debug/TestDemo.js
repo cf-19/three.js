@@ -21,7 +21,7 @@ class App {
 
         this.camera.position.z = 50;
         this.camera = new THREE.PerspectiveCamera( 60, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000 );
-        this.camera.position.z = 0;
+        this.camera.position.z = 100;
         this.scene = new THREE.Scene();
 
         const size = 10;
@@ -31,7 +31,10 @@ class App {
         // this.scene.add( gridHelper );
     
         /** custom start */
-        this.testBox2()
+        const a = this.testShapeGeometry();
+        console.log(a);
+        console.log(this.camera);
+        this.scene.add(a)
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
