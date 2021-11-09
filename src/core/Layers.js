@@ -50,5 +50,14 @@ class Layers {
 
 }
 
+const cameraLayer = new Layers();
+const objLayer = new Layers();
+
+// 
+cameraLayer.enable(1)
+cameraLayer.enable(2)
+cameraLayer.enable(3)
+console.log(cameraLayer);
+console.log(objLayer);
 
 export { Layers };

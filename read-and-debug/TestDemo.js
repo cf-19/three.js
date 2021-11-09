@@ -31,10 +31,7 @@ class App {
         // this.scene.add( gridHelper );
     
         /** custom start */
-        const a = this.testShapeGeometry();
-        console.log(a);
-        console.log(this.camera);
-        this.scene.add(a)
+        this.testRelativePos()
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -235,6 +232,21 @@ class App {
         const LineSegments = new THREE.LineSegments( geometry, this.material );
 
         this.scene.add(LineSegments);
+
+    }
+
+    testRelativePos() {
+
+        const m = new THREE.Group();
+        m.position.set(40, 0, 0);
+
+        const child = new THREE.Group().add(this.testShapeGeometry());
+
+        child.position.set(40, 0, 0);
+        m.add(child)
+
+        console.log(m);
+        this.scene.add(m)
 
     }
 

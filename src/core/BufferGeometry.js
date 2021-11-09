@@ -340,7 +340,6 @@ class BufferGeometry extends EventDispatcher {
 				}
 
 			}
-
 		} else {
 
 			this.boundingBox.makeEmpty();
