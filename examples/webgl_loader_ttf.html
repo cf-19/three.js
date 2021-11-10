@@ -17,13 +17,14 @@
 			import * as THREE from '../build/three.module.js';
 
 			import { TTFLoader } from './jsm/loaders/TTFLoader.js';
+            import { OrbitControls } from './jsm/controls/OrbitControls.js';
 
 			let container;
 			let camera, cameraTarget, scene, renderer;
 			let group, textMesh1, textMesh2, textGeo, material;
 			let firstLetter = true;
 
-			let text = 'three.js';
+			let text = '测试中文文字';
 			const height = 20,
 				size = 70,
 				hover = 30,
@@ -32,7 +33,7 @@
 				bevelSize = 1.5;
 
 			let font = null;
-			const mirror = true;
+			const mirror = false;
 
 			let targetRotation = 0;
 			let targetRotationOnPointerDown = 0;
@@ -63,6 +64,7 @@
 				scene.background = new THREE.Color( 0x000000 );
 				scene.fog = new THREE.Fog( 0x000000, 250, 1400 );
 
+
 				// LIGHTS
 
 				const dirLight = new THREE.DirectionalLight( 0xffffff, 0.125 );
@@ -74,7 +76,10 @@
 				pointLight.color.setHSL( Math.random(), 1, 0.5 );
 				scene.add( pointLight );
 
-				material = new THREE.MeshPhongMaterial( { color: 0xffffff, flatShading: true } );
+				material = new THREE.MeshBasicMaterial( { 
+                    color: 0xffffff,
+                    side: THREE.FrontSide
+                } );
 
 				group = new THREE.Group();
 				group.position.y = 100;
@@ -83,20 +88,20 @@
 
 				const loader = new TTFLoader();
 
-				loader.load( 'fonts/ttf/kenpixel.ttf', function ( json ) {
+				loader.load( 'fonts/ttf/simhei.ttf', function ( json ) {
 
 					font = new THREE.Font( json );
 					createText();
 
 				} );
 
-				const plane = new THREE.Mesh(
-					new THREE.PlaneGeometry( 10000, 10000 ),
-					new THREE.MeshBasicMaterial( { color: 0xffffff, opacity: 0.5, transparent: true } )
-				);
-				plane.position.y = 100;
-				plane.rotation.x = - Math.PI / 2;
-				scene.add( plane );
+				// const plane = new THREE.Mesh(
+				// 	new THREE.PlaneGeometry( 10000, 10000 ),
+				// 	new THREE.MeshBasicMaterial( { color: 0xffffff, opacity: 0.5, transparent: true } )
+				// );
+				// plane.position.y = 100;
+				// plane.rotation.x = - Math.PI / 2;
+				// scene.add( plane );
 
 				// RENDERER
 
@@ -104,6 +109,9 @@
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
+
+                new OrbitControls( camera, renderer.domElement ); 
+
 
 				// EVENTS
 
@@ -182,45 +190,46 @@
 					font: font,
 
 					size: size,
-					height: height,
-					curveSegments: curveSegments,
+					height: 0,
+					curveSegments: 1,
 
 					bevelThickness: bevelThickness,
 					bevelSize: bevelSize,
-					bevelEnabled: true
+					bevelEnabled: false
 
 				} );
 
-				textGeo.computeBoundingBox();
-				textGeo.computeVertexNormals();
+                textGeo = new THREE.WireframeGeometry(textGeo)
+                let line = new THREE.LineSegments( textGeo );
+                line.material.depthTest = false;
+                line.material.opacity = 0.25;
+                line.material.transparent = true;
+                line.position.x = 4;
+                line.position.z = -30
+                line.position.y = 50
+                
+                scene.add( line );
 
-				const centerOffset = - 0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
+				textGeo.computeBoundingBox();
+                const centerOffset = - 0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
+
+
+                line.position.x = centerOffset;
+				line.position.y = 50;
+				line.position.z = 0;
 
 				textMesh1 = new THREE.Mesh( textGeo, material );
-
+                textMesh1.scale.set(10, 10, 10)
 				textMesh1.position.x = centerOffset;
-				textMesh1.position.y = hover;
-				textMesh1.position.z = 0;
+				textMesh1.position.y = 50;
+				textMesh1.position.z = -30;
 
-				textMesh1.rotation.x = 0;
-				textMesh1.rotation.y = Math.PI * 2;
+				// // textGeo.computeVertexNormals();
 
-				group.add( textMesh1 );
+				// textMesh1.rotation.x = 0;
+				// textMesh1.rotation.y = Math.PI * 2;
 
-				if ( mirror ) {
-
-					textMesh2 = new THREE.Mesh( textGeo, material );
-
-					textMesh2.position.x = centerOffset;
-					textMesh2.position.y = - hover;
-					textMesh2.position.z = height;
-
-					textMesh2.rotation.x = Math.PI;
-					textMesh2.rotation.y = Math.PI * 2;
-
-					group.add( textMesh2 );
-
-				}
+				// scene.add( textMesh1 );
 
 			}
 
