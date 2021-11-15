@@ -53,7 +53,7 @@ class Layers {
 const cameraLayer = new Layers();
 const objLayer = new Layers();
 
-objLayer.set(30)
+objLayer.set(1)
 
 // 
 cameraLayer.enable(1)
