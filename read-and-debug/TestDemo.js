@@ -242,10 +242,12 @@ class App {
 
         const parentGroup = new THREE.Group();
         parentGroup.position.set(20, 0, 0);
+        parentGroup.rotation.z = Math.PI / 2
 
         const child = new THREE.Group().add(this.testShapeGeometry());
 
         child.position.set(20, 0, 0);
+        child.rotation.z = Math.PI / 2
         parentGroup.add(child)
 
         console.log(parentGroup);
