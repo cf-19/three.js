@@ -1,14 +1,54 @@
 import * as THREE from '../src/Three.js';
 import { OrbitControls } from '../examples/jsm/controls/OrbitControls.js'
 
+class Plane {
+
+    norm;
+    d;
+
+    fromTriangle(v0, v1, v2) {
+
+        this.norm = new THREE.Vector3().crossVectors( 
+            v1.sub(v0), 
+            v2.sub(v0) );
+    
+        this.norm.normalize()
+
+        this.d = -this.norm.dot(v0);
+
+    }
+
+    getReflection() {
+
+        let norm = this.norm
+        let d = this.d
+
+        let mirrorMatrix = new THREE.Matrix4();
+
+        // matrix follow row order
+        // m00, m01, m02, m03
+        // m10, m11, m12, m13
+
+        mirrorMatrix.set(
+            -2 * norm.x * norm.x + 1,  -2 * norm.x * norm.y,     -2 * norm.x * norm.z,     -2 * norm.x * d,
+            -2 * norm.y * norm.x,      -2 * norm.y * norm.y + 1, -2 * norm.y * norm.z,     -2 * norm.y * d,
+            -2 * norm.z * norm.x,      -2 * norm.z * norm.y,     -2 * norm.z * norm.z + 1, -2 * norm.z * d,
+            0,           0,          0,          1,
+        );
+
+        return mirrorMatrix;
+
+    }
+
+}
 
 class App {
 
-    camera = new THREE.PerspectiveCamera(70, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000);
-    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera( 70, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000 ); 
+    scene = new THREE.Scene(); 
     renderer;
-    geometry;
-    material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    geometry; 
+    material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } ); 
     mesh;
 
     raycaster = new THREE.Raycaster();
@@ -18,9 +58,8 @@ class App {
     static VIEWPORT_HEIGHT = 400;
 
     init() {
-
         this.camera.position.z = 50;
-        this.camera = new THREE.PerspectiveCamera(60, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000);
+        this.camera = new THREE.PerspectiveCamera( 60, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000 );
         this.camera.position.z = 100;
         this.scene = new THREE.Scene();
 
@@ -29,107 +68,96 @@ class App {
 
         // const gridHelper = new THREE.GridHelper( size, divisions );
         // this.scene.add( gridHelper );
-
+    
         /** custom start */
-        this.testRelativePos()
+        this.testLine()
         /** custom end */
-
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setSize(App.VIEWPORT_WIDTH, App.VIEWPORT_HEIGHT);
-        this.renderer.setAnimationLoop(this.animation.bind(this));
-        document.body.appendChild(this.renderer.domElement);
-        const controls = new OrbitControls(this.camera, this.renderer.domElement);
-
+    
+        this.renderer = new THREE.WebGLRenderer( { antialias: true } );
+        this.renderer.setSize( App.VIEWPORT_WIDTH, App.VIEWPORT_HEIGHT );
+        this.renderer.setAnimationLoop( this.animation.bind(this) );
+        document.body.appendChild( this.renderer.domElement );
         document.addEventListener("mousedown", this.onMouseDown.bind(this));
 
+        // const controls = new OrbitControls( this.camera, this.renderer.domElement );
     }
 
     testBox2() {
-
         const box = new THREE.Box2().setFromPoints([
             new THREE.Vector2(100, 100),
             new THREE.Vector2(0, 0),
         ])
-
-
     }
 
     onMouseDown(event) {
-
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        this.mouse.x =  ( event.clientX / window.innerWidth ) * 2 - 1;
+        this.mouse.y =  -( event.clientY / window.innerHeight ) * 2 + 1;
 
         console.log(this.mouse);
 
-        this.raycaster.setFromCamera(this.mouse, this.camera);
-        const intersects = this.raycaster.intersectObjects(this.scene.children);
+        this.raycaster.setFromCamera( this.mouse, this.camera );
+        const intersects = this.raycaster.intersectObjects( this.scene.children );
 
         console.log(intersects);
 
-        for (let i = 0; i < intersects.length; i++) {
+        for ( let i = 0; i < intersects.length; i ++ ) {
 
             console.log(intersects[i]);
-
+    
         }
-
     }
 
-    /**
-    * @param {Number} 0 - frames
-    */
+     /**
+     * @param {Number} 0 - frames
+     */
     animation(time) {
         // console.log(time);
         // this.mesh.rotation.x = time / 2000;
         // this.mesh.rotation.y = time / 1000;
-
-        this.renderer.render(this.scene, this.camera);
+    
+        this.renderer.render( this.scene, this.camera );
     }
 
     get3dPointZAxis(event) {
         var vector = new THREE.Vector3(
-            (event.clientX / window.innerWidth) * 2 - 1,
-            - (event.clientY / window.innerHeight) * 2 + 1,
-            0.5);
-        vector.unproject(this.camera);
+                    ( event.clientX / window.innerWidth ) * 2 - 1,
+                    - ( event.clientY / window.innerHeight ) * 2 + 1,
+                    0.5 );
+        vector.unproject( this.camera );
 
-        var dir = vector.sub(this.camera.position).normalize();
+        var dir = vector.sub( this.camera.position ).normalize();
         var distance = - (this.camera.position.z) / dir.z;
         var pos = this.camera.position
             .clone()
-            .add(dir.multiplyScalar(distance));
+            .add( dir.multiplyScalar( distance ) );    
 
         return pos;
-
     }
 
     /** test shape geometry */
     testShapeGeometry() {
-
         const x = 0, y = 0;
-
         const heartShape = new THREE.Shape();
 
-        heartShape.moveTo(x + 5, y + 5);
-        heartShape.bezierCurveTo(x + 5, y + 5, x + 4, y, x, y);
-        heartShape.bezierCurveTo(x - 6, y, x - 6, y + 7, x - 6, y + 7);
-        heartShape.bezierCurveTo(x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19);
-        heartShape.bezierCurveTo(x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7);
-        heartShape.bezierCurveTo(x + 16, y + 7, x + 16, y, x + 10, y);
-        heartShape.bezierCurveTo(x + 7, y, x + 5, y + 5, x + 5, y + 5);
+        heartShape.moveTo( x + 5, y + 5 );
+        heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y, x, y );
+        heartShape.bezierCurveTo( x - 6, y, x - 6, y + 7,x - 6, y + 7 );
+        heartShape.bezierCurveTo( x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19 );
+        heartShape.bezierCurveTo( x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7 );
+        heartShape.bezierCurveTo( x + 16, y + 7, x + 16, y, x + 10, y );
+        heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
 
-        const geometry = new THREE.ShapeGeometry(heartShape);
-        const material = new THREE.MeshBasicMaterial({
-            color: 0x00ff00,
+        const geometry = new THREE.ShapeGeometry( heartShape );
+        const material = new THREE.MeshBasicMaterial( { 
+            color: 0x00ff00,  
             side: THREE.DoubleSide
-        });
-        const mesh = new THREE.Mesh(geometry, material);
+        } );
+        const mesh = new THREE.Mesh( geometry, material ) ;
 
         return mesh;
-
     }
 
     testRotate() {
-
         const mesh = this.testShapeGeometry()
         mesh.position.set(75, 0, -300);
 
@@ -138,11 +166,9 @@ class App {
         console.log(mesh);
 
         this.scene.add(mesh)
-
     }
 
     testMirrorMatrix() {
-
         const mesh = this.testShapeGeometry()
         mesh.position.set(75, 0, -300);
 
@@ -191,27 +217,30 @@ class App {
         //     meshs.push(clone);
         // }
 
-        this.scene.add(...meshs);
-
+        this.scene.add( ...meshs );
     }
 
+    /**
+     * LOD
+     */
     testLOD() {
         const lod = new THREE.LOD();
 
-        //Create spheres with 3 levels of detail and create new LOD levels for them
-        for (let i = 0; i < 3; i++) {
+        // Create spheres with 3 levels of detail and create new LOD levels for them
+        for( let i = 0; i < 3; i++ ) {
+            const geometry = new THREE.IcosahedronGeometry( 10, 3 - i )
+            const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+            const mesh = new THREE.Mesh( geometry, material );
 
-            const geometry = new THREE.IcosahedronGeometry(10, 3 - i)
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            const mesh = new THREE.Mesh(geometry, material);
-
-            lod.addLevel(mesh, i * 75);
-
+            lod.addLevel( mesh, i * 75 );
         }
 
-        this.scene.add(lod);
+        this.scene.add( lod );
     }
 
+    /**
+     * check if toJSON save userdata
+     */
     testMeshUserData() {
         this.scene.userData = {
             test: "I'm data"
@@ -219,81 +248,102 @@ class App {
         console.log(this.scene.toJSON());
     }
 
+    /**
+     * 奇数的情况 最后一点顶点无效
+     * line segment线段为偶数
+     */
     testLineSegment() {
-
-        // 奇数的情况 最后一点顶点无效
         const points = [];
-        points.push(new THREE.Vector3(10, 0, 0));
-        points.push(new THREE.Vector3(10, 10, 0));
-        points.push(new THREE.Vector3(0, 0, 0));
-        points.push(new THREE.Vector3(0, 10, 0));
+        points.push( new THREE.Vector3( 10, 0, 0 ) );
+        points.push( new THREE.Vector3( 10, 10, 0 ) );
+        points.push( new THREE.Vector3( 0, 0, 0 ) );
+        points.push( new THREE.Vector3( 0, 10, 0 ) );
 
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const LineSegments = new THREE.LineSegments(geometry, this.material);
+        const geometry = new THREE.BufferGeometry().setFromPoints( points );
+        const LineSegments = new THREE.LineSegments( geometry, this.material );
 
         this.scene.add(LineSegments);
-
     }
 
     /**
-     * children会根据parentGroup的位置做相对位置的处理
+     * 测试相对坐标
      */
     testRelativePos() {
-
-        const parentGroup = new THREE.Group();
-        parentGroup.position.set(20, 0, 0);
-        parentGroup.rotation.z = Math.PI / 2
+        const m = new THREE.Group();
+        m.position.set(40, 0, 0);
 
         const child = new THREE.Group().add(this.testShapeGeometry());
 
-        child.position.set(20, 0, 0);
-        child.rotation.z = Math.PI / 2
-        parentGroup.add(child)
+        child.position.set(40, 0, 0);
+        m.add(child)
 
-        console.log(parentGroup);
-        this.scene.add(parentGroup)
-
+        console.log(m);
+        this.scene.add(m)
     }
 
-}
-
-class Plane {
-
-    norm;
-    d;
-
-    fromTriangle(v0, v1, v2) {
-
-        this.norm = new THREE.Vector3().crossVectors(
-            v1.sub(v0),
-            v2.sub(v0));
-
-        this.norm.normalize()
-
-        this.d = -this.norm.dot(v0);
-
+    /**
+     * test layer func bitmask
+     */
+    testLayer() {
+        const cameraLayer = new Layers();
+        const objLayer = new Layers();
+        
+        objLayer.set(30)
+        
+        // 
+        cameraLayer.enable(1)
+        cameraLayer.enable(2)
+        cameraLayer.enable(30)
+        console.log(cameraLayer);
+        console.log(objLayer);
+        
+        console.log(objLayer.test(cameraLayer));
     }
 
-    getReflection() {
+    /**
+     * 测试model matrix
+     */
+    testLine() {
+        const g = new THREE.Group()
+        g.position.set(0, 0, 0)
+        // g.position.set(0, 0, 0)
+        g.rotation.z = 0 || Math.PI
 
-        let norm = this.norm
-        let d = this.d
+        const points = [];
+        points.push( new THREE.Vector3( 10, 10, 0 ) );
 
-        let mirrorMatrix = new THREE.Matrix4();
+        const geometry = new THREE.BufferGeometry().setFromPoints( points );
+        const material = new THREE.PointsMaterial( { color: 0xFFFFFF, size: 10 } );
+        const p = new THREE.Points( geometry, material );
+        
+        g.add(p)
+        this.scene.add(g)
 
-        // matrix follow row order
-        // m00, m01, m02, m03
-        // m10, m11, m12, m13
+        for (const k in p) {
+            // console.log(k, line[k])
+        }
+        // 1. matrix matrixWorld diff?
+        //      matrix: local matrix
+        //      matrixWorld: world matrix
+        // console.log("matrix", p.matrix);
+        console.log("matrixWorld", p.matrixWorld);
+        // 可以作为解块的处理方法
+        console.log("apply", new THREE.Vector3(10, 10, 0).applyMatrix4(p.matrixWorld));
+        
+        // 2. getWorldPosition() 获取world space下的position
+        const getWorldPosition = p.getWorldPosition();
+        console.log("getWorldPosition", getWorldPosition);
+    }
 
-        mirrorMatrix.set(
-            -2 * norm.x * norm.x + 1, -2 * norm.x * norm.y, -2 * norm.x * norm.z, -2 * norm.x * d,
-            -2 * norm.y * norm.x, -2 * norm.y * norm.y + 1, -2 * norm.y * norm.z, -2 * norm.y * d,
-            -2 * norm.z * norm.x, -2 * norm.z * norm.y, -2 * norm.z * norm.z + 1, -2 * norm.z * d,
-            0, 0, 0, 1,
-        );
-
-        return mirrorMatrix;
-
+    /**
+     * 
+     */
+    testMatrixOrder() {
+        // 存的时候是 CR ORDER
+            //   [ 11, 21, 31, 41,
+            //     12, 22, 32, 42,
+            //     13, 23, 33, 43,
+            //     14, 24, 34, 44 ];
     }
 
 }

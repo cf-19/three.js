@@ -50,18 +50,6 @@ class Layers {
 
 }
 
-const cameraLayer = new Layers();
-const objLayer = new Layers();
 
-objLayer.set(1)
-
-// 
-cameraLayer.enable(1)
-cameraLayer.enable(2)
-cameraLayer.enable(30)
-console.log(cameraLayer);
-console.log(objLayer);
-
-console.log(objLayer.test(cameraLayer));
 
 export { Layers };
