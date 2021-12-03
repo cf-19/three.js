@@ -330,7 +330,7 @@ class App {
         // 可以作为解块的处理方法
         console.log("apply", new THREE.Vector3(10, 10, 0).applyMatrix4(p.matrixWorld));
         
-        // 2. getWorldPosition() 获取world space下的position
+        // 2. getWorldPosition() 获取world space下的position属性，并非shader model后的数据
         const getWorldPosition = p.getWorldPosition();
         console.log("getWorldPosition", getWorldPosition);
     }
