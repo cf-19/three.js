@@ -70,7 +70,7 @@ class App {
         // this.scene.add( gridHelper );
     
         /** custom start */
-        this.testLine()
+        this.testModelMatrix()
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -78,6 +78,14 @@ class App {
         this.renderer.setAnimationLoop( this.animation.bind(this) );
         document.body.appendChild( this.renderer.domElement );
         document.addEventListener("mousedown", this.onMouseDown.bind(this));
+
+        const points = [];
+        points.push( new THREE.Vector3( 0, 0, 0 ) );
+
+        const geometry = new THREE.BufferGeometry().setFromPoints( points );
+        const material = new THREE.PointsMaterial( { color: 0xFFFF33, size: 5 } );
+        const p = new THREE.Points( geometry, material );
+        this.scene.add(p)
 
         // const controls = new OrbitControls( this.camera, this.renderer.domElement );
     }
@@ -303,36 +311,49 @@ class App {
     /**
      * 测试model matrix
      */
-    testLine() {
+    testModelMatrix() {
         const g = new THREE.Group()
         g.position.set(0, 0, 0)
-        // g.position.set(0, 0, 0)
-        g.rotation.z = 0 || Math.PI
+        // g.position.set(10, 10, 0)
+        g.rotation.z = Math.PI /2
 
         const points = [];
         points.push( new THREE.Vector3( 10, 10, 0 ) );
 
         const geometry = new THREE.BufferGeometry().setFromPoints( points );
-        const material = new THREE.PointsMaterial( { color: 0xFFFFFF, size: 10 } );
+        const material = new THREE.PointsMaterial( { color: 0xFFFFFF, size: 5 } );
         const p = new THREE.Points( geometry, material );
         
         g.add(p)
-        this.scene.add(g)
+        this.scene.add(g, p.clone)
 
         for (const k in p) {
             // console.log(k, line[k])
         }
-        // 1. matrix matrixWorld diff?
-        //      matrix: local matrix
-        //      matrixWorld: world matrix
-        // console.log("matrix", p.matrix);
-        console.log("matrixWorld", p.matrixWorld);
-        // 可以作为解块的处理方法
-        console.log("apply", new THREE.Vector3(10, 10, 0).applyMatrix4(p.matrixWorld));
         
-        // 2. getWorldPosition() 获取world space下的position属性，并非shader model后的数据
-        const getWorldPosition = p.getWorldPosition();
-        console.log("getWorldPosition", getWorldPosition);
+        /**
+         * 1. matrix matrixWorld diff?
+         *      - matrix: local matrix
+         *      - matrixWorld: world matrix
+         */
+        console.log("matrixWorld", g.matrixWorld);
+        console.log("matrixWorld", p.matrixWorld);
+
+        // 
+        const pos = g.position.clone();
+        const scale = g.scale.clone();
+        const quaternion = g.quaternion.clone();
+        const matrixWorl = new THREE.Matrix4().compose(pos, quaternion, scale)
+        console.log(matrixWorl)
+
+        // 可以作为解块的处理方法, 原始的点数据applyBlockGroup下的矩阵
+        console.log("applyMatrixWorld", new THREE.Vector3(10, 10, 0).applyMatrix4(matrixWorl));
+        
+        /**
+         * 2. getWorldPosition() 获取world space下的position属性，并非shader model后的数据
+         */
+        // const getWorldPosition = p.getWorldPosition();
+        // console.log("getWorldPosition", getWorldPosition);
     }
 
     /**
