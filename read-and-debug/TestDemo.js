@@ -71,6 +71,7 @@ class App {
     
         /** custom start */
         this.testModelMatrix()
+        this.testMask()
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -321,8 +322,13 @@ class App {
         points.push( new THREE.Vector3( 10, 10, 0 ) );
 
         const geometry = new THREE.BufferGeometry().setFromPoints( points );
-        const material = new THREE.PointsMaterial( { color: 0xFFFFFF, size: 5 } );
+        const material = new THREE.PointsMaterial( { 
+            color: 0xFFFFFF, size: 5,
+        } );
         const p = new THREE.Points( geometry, material );
+        
+        // 测试mask
+        p.position.z = 1
         
         g.add(p)
         this.scene.add(g, p.clone)
@@ -360,11 +366,32 @@ class App {
      * 
      */
     testMatrixOrder() {
-        // 存的时候是 CR ORDER
-            //   [ 11, 21, 31, 41,
-            //     12, 22, 32, 42,
-            //     13, 23, 33, 43,
-            //     14, 24, 34, 44 ];
+        /**
+         * 存的时候是 CR ORDER, m.elements
+         *      [ 11, 21, 31, 41,
+         *        12, 22, 32, 42,
+         *        13, 23, 33, 43,
+         *        14, 24, 34, 44 ];
+         */
+
+        /**
+         * set的时候是RC ORDER
+         *       [ 11, 12, 13, 14,
+         *         21, 22, 23, 24,
+         *         31, 32, 33, 34,
+         *         41, 42, 43, 44 ];
+         */
+    }
+
+    testMask() {
+        const geometry = new THREE.PlaneGeometry(100,100);
+        const material = new THREE.MeshBasicMaterial( { 
+            color: 0xFFFF33, 
+            opacity: 0.5, 
+            transparent: true,
+        } );
+        const mesh = new THREE.Mesh( geometry, material );
+        this.scene.add(mesh)
     }
 
 }
