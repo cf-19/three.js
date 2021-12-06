@@ -71,7 +71,6 @@ class App {
     
         /** custom start */
         this.testModelMatrix()
-        this.testMask()
         /** custom end */
     
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -315,7 +314,7 @@ class App {
     testModelMatrix() {
         const g = new THREE.Group()
         g.position.set(0, 0, 0)
-        // g.position.set(10, 10, 0)
+        g.position.set(10, 10, 0)
         g.rotation.z = Math.PI /2
 
         const points = [];
@@ -331,7 +330,7 @@ class App {
         p.position.z = 1
         
         g.add(p)
-        this.scene.add(g, p.clone)
+        this.scene.add(g)
 
         for (const k in p) {
             // console.log(k, line[k])
@@ -342,8 +341,9 @@ class App {
          *      - matrix: local matrix
          *      - matrixWorld: world matrix
          */
-        console.log("matrixWorld", g.matrixWorld);
-        console.log("matrixWorld", p.matrixWorld);
+        console.log("group matrixWorld", g.matrixWorld);
+        console.log("group localMatrix", g.matrix);
+        console.log("mesh matrixWorld", p.matrixWorld);
 
         // 
         const pos = g.position.clone();
@@ -353,7 +353,7 @@ class App {
         console.log(matrixWorl)
 
         // 可以作为解块的处理方法, 原始的点数据applyBlockGroup下的矩阵
-        console.log("applyMatrixWorld", new THREE.Vector3(10, 10, 0).applyMatrix4(matrixWorl));
+        console.log("applyMatrixWorld", new THREE.Vector3(10, 10, 0).applyMatrix4(matrixWorl).round());
         
         /**
          * 2. getWorldPosition() 获取world space下的position属性，并非shader model后的数据
