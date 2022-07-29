@@ -18,11 +18,11 @@
 				z-index: 999;
 			}
 
-			#selection > div {
+			/* #selection > div {
 				height: 128px;
 				width: 128px;
 				border: 1px solid white;
-			}
+			} */
 		</style>
 	</head>
 	<body>
@@ -51,7 +51,7 @@
 
 			const dpr = window.devicePixelRatio;
 
-			const textureSize = 128 * dpr;
+			const textureSize = 256 * dpr;
 			const vector = new THREE.Vector2();
 			const color = new THREE.Color();
 
@@ -105,6 +105,8 @@
 
 				const spriteMaterial = new THREE.SpriteMaterial( { map: texture } );
 				sprite = new THREE.Sprite( spriteMaterial );
+
+                // set sprite width & height
 				sprite.scale.set( textureSize, textureSize, 1 );
 				sceneOrtho.add( sprite );
 
@@ -180,7 +182,6 @@
 				vector.y = ( window.innerHeight * dpr / 2 ) - ( textureSize / 2 );
 
 				renderer.copyFramebufferToTexture( vector, texture );
-
 				renderer.clearDepth();
 				renderer.render( sceneOrtho, cameraOrtho );
 

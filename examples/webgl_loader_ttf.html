@@ -90,6 +90,7 @@
 
 				loader.load( 'fonts/ttf/simhei.ttf', function ( json ) {
 
+                    console.log("ttf json", json)
 					font = new THREE.Font( json );
 					createText();
 
