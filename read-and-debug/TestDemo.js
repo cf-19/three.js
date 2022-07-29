@@ -8,10 +8,10 @@ class Plane {
 
     fromTriangle(v0, v1, v2) {
 
-        this.norm = new THREE.Vector3().crossVectors( 
-            v1.sub(v0), 
+        this.norm = new THREE.Vector3().crossVectors(
+            v1.sub(v0),
             v2.sub(v0) );
-    
+
         this.norm.normalize()
 
         this.d = -this.norm.dot(v0);
@@ -44,11 +44,11 @@ class Plane {
 
 class App {
 
-    camera = new THREE.PerspectiveCamera( 70, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000 ); 
-    scene = new THREE.Scene(); 
+    camera = new THREE.PerspectiveCamera( 70, App.VIEWPORT_WIDTH / App.VIEWPORT_HEIGHT, 0.01, 1000 );
+    scene = new THREE.Scene();
     renderer;
-    geometry; 
-    material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } ); 
+    geometry;
+    material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
     mesh;
 
     raycaster = new THREE.Raycaster();
@@ -68,11 +68,11 @@ class App {
 
         // const gridHelper = new THREE.GridHelper( size, divisions );
         // this.scene.add( gridHelper );
-    
+
         /** custom start */
         this.testModelMatrix()
         /** custom end */
-    
+
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
         this.renderer.setSize( App.VIEWPORT_WIDTH, App.VIEWPORT_HEIGHT );
         this.renderer.setAnimationLoop( this.animation.bind(this) );
@@ -111,7 +111,7 @@ class App {
         for ( let i = 0; i < intersects.length; i ++ ) {
 
             console.log(intersects[i]);
-    
+
         }
     }
 
@@ -122,7 +122,7 @@ class App {
         // console.log(time);
         // this.mesh.rotation.x = time / 2000;
         // this.mesh.rotation.y = time / 1000;
-    
+
         this.renderer.render( this.scene, this.camera );
     }
 
@@ -137,7 +137,7 @@ class App {
         var distance = - (this.camera.position.z) / dir.z;
         var pos = this.camera.position
             .clone()
-            .add( dir.multiplyScalar( distance ) );    
+            .add( dir.multiplyScalar( distance ) );
 
         return pos;
     }
@@ -156,8 +156,8 @@ class App {
         heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
 
         const geometry = new THREE.ShapeGeometry( heartShape );
-        const material = new THREE.MeshBasicMaterial( { 
-            color: 0x00ff00,  
+        const material = new THREE.MeshBasicMaterial( {
+            color: 0x00ff00,
             side: THREE.DoubleSide
         } );
         const mesh = new THREE.Mesh( geometry, material ) ;
@@ -295,16 +295,16 @@ class App {
     testLayer() {
         const cameraLayer = new Layers();
         const objLayer = new Layers();
-        
+
         objLayer.set(30)
-        
-        // 
+
+        //
         cameraLayer.enable(1)
         cameraLayer.enable(2)
         cameraLayer.enable(30)
         console.log(cameraLayer);
         console.log(objLayer);
-        
+
         console.log(objLayer.test(cameraLayer));
     }
 
@@ -321,21 +321,21 @@ class App {
         points.push( new THREE.Vector3( 10, 10, 0 ) );
 
         const geometry = new THREE.BufferGeometry().setFromPoints( points );
-        const material = new THREE.PointsMaterial( { 
+        const material = new THREE.PointsMaterial( {
             color: 0xFFFFFF, size: 5,
         } );
         const p = new THREE.Points( geometry, material );
-        
+
         // 测试mask
         p.position.z = 1
-        
+
         g.add(p)
         this.scene.add(g)
 
         for (const k in p) {
             // console.log(k, line[k])
         }
-        
+
         /**
          * 1. matrix matrixWorld diff?
          *      - matrix: local matrix
@@ -345,7 +345,7 @@ class App {
         console.log("group localMatrix", g.matrix);
         console.log("mesh matrixWorld", p.matrixWorld);
 
-        // 
+        //
         const pos = g.position.clone();
         const scale = g.scale.clone();
         const quaternion = g.quaternion.clone();
@@ -354,7 +354,7 @@ class App {
 
         // 可以作为解块的处理方法, 原始的点数据applyBlockGroup下的矩阵
         console.log("applyMatrixWorld", new THREE.Vector3(10, 10, 0).applyMatrix4(matrixWorl).round());
-        
+
         /**
          * 2. getWorldPosition() 获取world space下的position属性，并非shader model后的数据
          */
@@ -363,7 +363,7 @@ class App {
     }
 
     /**
-     * 
+     *
      */
     testMatrixOrder() {
         /**
@@ -385,9 +385,9 @@ class App {
 
     testMask() {
         const geometry = new THREE.PlaneGeometry(100,100);
-        const material = new THREE.MeshBasicMaterial( { 
-            color: 0xFFFF33, 
-            opacity: 0.5, 
+        const material = new THREE.MeshBasicMaterial( {
+            color: 0xFFFF33,
+            opacity: 0.5,
             transparent: true,
         } );
         const mesh = new THREE.Mesh( geometry, material );

@@ -1,5 +1,7 @@
 ﻿function WebGLBindingStates( gl, extensions, attributes, capabilities ) {
 
+	debugger;
+
 	const maxVertexAttributes = gl.getParameter( gl.MAX_VERTEX_ATTRIBS );
 
 	const extension = capabilities.isWebGL2 ? null : extensions.get( 'OES_vertex_array_object' );
