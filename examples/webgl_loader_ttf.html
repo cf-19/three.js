@@ -24,7 +24,7 @@
 			let group, textMesh1, textMesh2, textGeo, material;
 			let firstLetter = true;
 
-			let text = '测试中文文字';
+			let text = '测试中文文字+';
 			const height = 20,
 				size = 70,
 				hover = 30,
@@ -76,7 +76,7 @@
 				pointLight.color.setHSL( Math.random(), 1, 0.5 );
 				scene.add( pointLight );
 
-				material = new THREE.MeshBasicMaterial( { 
+				material = new THREE.MeshBasicMaterial( {
                     color: 0xffffff,
                     side: THREE.FrontSide
                 } );
@@ -92,6 +92,13 @@
 
                     console.log("ttf json", json)
 					font = new THREE.Font( json );
+
+					if(json.glyphs["+"])
+					{
+						var a = json.glyphs["+"]
+						debugger
+					}
+
 					createText();
 
 				} );
@@ -111,7 +118,7 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
 
-                new OrbitControls( camera, renderer.domElement ); 
+                new OrbitControls( camera, renderer.domElement );
 
 
 				// EVENTS
@@ -208,7 +215,7 @@
                 line.position.x = 4;
                 line.position.z = -30
                 line.position.y = 50
-                
+
                 scene.add( line );
 
 				textGeo.computeBoundingBox();

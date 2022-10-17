@@ -61,7 +61,7 @@ function MenubarFile( editor ) {
 	fileInput.multiple = true;
 	fileInput.type = 'file';
 	fileInput.addEventListener( 'change', function () {
-
+		debugger
 		editor.loader.loadFiles( fileInput.files );
 		form.reset();
 
